@@ -6,4 +6,6 @@ interface PointService {
     fun findPointHistories(id: Long): List<PointHistory>
 
     fun charge(id: Long, amount: Long): UserPoint
+
+    fun use(id: Long, amount: Long): UserPoint
 }

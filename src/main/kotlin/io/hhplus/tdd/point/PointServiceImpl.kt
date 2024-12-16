@@ -37,4 +37,21 @@ class PointServiceImpl (
 
         return userPointAfterCharge
     }
+
+    override fun use(id: Long, amount: Long): UserPoint {
+        if (amount <= 0 || amount > 1_000_000) {
+            throw Exception("최소 1 포인트에서 최대 백만 포인트까지 사용 가능합니다.")
+        }
+
+        val userPoint = userPointTable.selectById(id)
+
+        if (userPoint.point < amount) {
+            throw Exception("보유한 포인트를 초과하여 사용할 수 없습니다.")
+        }
+
+        pointHistoryTable.insert(id, amount, TransactionType.USE, System.currentTimeMillis())
+        val userPointAfterUse = userPointTable.insertOrUpdate(id, userPoint.point - amount)
+
+        return userPointAfterUse
+    }
 }

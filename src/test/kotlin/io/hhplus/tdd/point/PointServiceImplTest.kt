@@ -95,4 +95,44 @@ class PointServiceImplTest
             pointService.charge(1L, 1L)
         }
     }
+
+    @Test fun `사용하려는 금액이 0인 경우, 실패한다`() {
+        //given
+        val userId = 1L
+        val amount = 0L
+
+        //when
+
+        //then
+        assertThrows(Exception::class.java) {
+            pointService.use(userId, amount)
+        }
+    }
+
+    @Test fun `사용하려는 금액이 백만보다 큰 경우, 실패한다`() {
+        //given
+        val userId = 1L
+        val amount = 1_000_001L
+
+        //when
+
+        //then
+        assertThrows(Exception::class.java) {
+            pointService.use(userId, amount)
+        }
+    }
+
+    @Test fun `가진 포인트보다 더 큰 포인트를 사용하려는 경우, 실패한다`() {
+        //given
+        val userId = 1L
+        val amount = 1L
+        val userPoint = pointService.findUserPointById(userId)
+
+        //when
+
+        //then
+        assertThrows(Exception::class.java) {
+            pointService.use(userId, amount)
+        }
+    }
 }
