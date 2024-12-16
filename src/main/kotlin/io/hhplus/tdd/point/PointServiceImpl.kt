@@ -7,9 +7,14 @@ import org.springframework.stereotype.Service
 @Service
 class PointServiceImpl (
     val userPointTable: UserPointTable,
+    val pointHistoryTable: PointHistoryTable
 ) : PointService {
 
     override fun findUserPointById(id: Long): UserPoint {
-        return userPointTable.selectById(id);
+        return userPointTable.selectById(id)
+    }
+
+    override fun findPointHistories(id: Long): List<PointHistory> {
+        return pointHistoryTable.selectAllByUserId(id)
     }
 }
