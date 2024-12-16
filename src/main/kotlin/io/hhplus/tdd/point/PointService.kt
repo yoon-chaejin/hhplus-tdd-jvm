@@ -5,4 +5,5 @@ interface PointService {
 
     fun findPointHistories(id: Long): List<PointHistory>
 
+    fun charge(id: Long, amount: Long): UserPoint
 }

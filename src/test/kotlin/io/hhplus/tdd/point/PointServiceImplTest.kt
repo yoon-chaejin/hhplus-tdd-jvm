@@ -45,4 +45,54 @@ class PointServiceImplTest
         //then
         assertEquals(0, pointHistories.size)
     }
+
+    @Test fun `충전하려는 금액이 0인 경우, 실패한다`() {
+        //given
+        val userId = 1L
+        val amount = 0L
+
+        //when
+
+        //then
+        assertThrows(Exception::class.java) {
+            pointService.charge(userId, amount)
+        }
+    }
+
+    @Test fun `충전하려는 금액이 백만보다 큰 경우, 실패한다`() {
+        //given
+        val userId = 1L
+        val amount = 1_000_001L
+
+        //when
+
+        //then
+        assertThrows(Exception::class.java) {
+            pointService.charge(userId, amount)
+        }
+    }
+
+    @Test fun `충전하려는 금액이 백만인 경우, 성공한다`() {
+        //given
+        val userId = 1L
+        val amount = 1_000_000L
+
+        //when
+        val userPoint = pointService.charge(userId, amount)
+
+        //then
+        assertEquals(amount, userPoint.point)
+    }
+
+    @Test fun `특정 유저가 충전 후 총 포인트가 백만보다 큰 경우, 실패한다`() {
+        //given
+        val userPointAfterFirstCharge = pointService.charge(1L, 1_000_000L)
+        assertEquals(1_000_000L, userPointAfterFirstCharge.point)
+        //when
+
+        //then
+        assertThrows(Exception::class.java) {
+            pointService.charge(1L, 1L)
+        }
+    }
 }
