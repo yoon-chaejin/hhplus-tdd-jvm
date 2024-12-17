@@ -13,6 +13,8 @@ class PointServiceImplTest
     private val pointHistoryTable = FakePointHistoryTable()
     private val sut: PointServiceImpl = PointServiceImpl(userPointTable, pointHistoryTable)
 
+    private val userId = 1L
+
     @AfterEach
     fun tearDown() {
         userPointTable.clearTable()
@@ -21,7 +23,6 @@ class PointServiceImplTest
 
     @Test fun `처음 UserPoint를 조회하는 경우, amount가 0이고 해당 id를 갖는 UserPoint를 반환한다`() {
         //given
-        val userId = 5L
 
         //when
         val userPoint = sut.findUserPointById(userId)
@@ -33,7 +34,6 @@ class PointServiceImplTest
 
     @Test fun `여러 번 UserPoint를 조회하는 경우, 최초와 동일한 UserPoint를 반환한다`() {
         //given
-        val userId = 5L
         val userPoint = sut.findUserPointById(userId)
 
         //when
@@ -47,7 +47,6 @@ class PointServiceImplTest
 
     @Test fun `내역이 없는 사용자를 조회하는 경우, 빈 리스트를 반환하다`() {
         //given
-        val userId = 1L
 
         //when
         val pointHistories = sut.findPointHistoriesByUserId(userId)
@@ -58,7 +57,6 @@ class PointServiceImplTest
 
     @Test fun `충전하려는 금액이 최소 충전 금액보다 작은 경우, 실패한다`() {
         //given
-        val userId = 1L
         val amount = PointServiceImpl.MIN_AMOUNT_PER_CHARGE - 1
 
         //when
@@ -71,7 +69,6 @@ class PointServiceImplTest
 
     @Test fun `충전하려는 금액이 최대 충전 금액보다 큰 경우, 실패한다`() {
         //given
-        val userId = 1L
         val amount = PointServiceImpl.MAX_AMOUNT_PER_CHARGE + 1
 
         //when
@@ -84,7 +81,6 @@ class PointServiceImplTest
 
     @Test fun `충전하려는 금액이 최소 충전 금액과 최대 충전 금액 사이에 있는 경우, 성공한다`() {
         //given
-        val userId = 1L
         val amount = (PointServiceImpl.MIN_AMOUNT_PER_CHARGE..PointServiceImpl.MAX_AMOUNT_PER_CHARGE).random()
 
         //when
@@ -108,7 +104,6 @@ class PointServiceImplTest
 
     @Test fun `사용하려는 금액이 최소 사용 금액보다 작은 경우, 실패한다`() {
         //given
-        val userId = 1L
         val amount = PointServiceImpl.MIN_AMOUNT_PER_USE - 1
 
         //when
@@ -121,7 +116,6 @@ class PointServiceImplTest
 
     @Test fun `사용하려는 금액이 최대 사용 금액보다 큰 경우, 실패한다`() {
         //given
-        val userId = 1L
         val amount = PointServiceImpl.MAX_AMOUNT_PER_USE + 1
 
         //when
@@ -134,7 +128,6 @@ class PointServiceImplTest
 
     @Test fun `가진 포인트보다 더 큰 포인트를 사용하려는 경우, 실패한다`() {
         //given
-        val userId = 1L
         val amount = (PointServiceImpl.MIN_AMOUNT_PER_USE..PointServiceImpl.MAX_AMOUNT_PER_USE).random()
         sut.findUserPointById(userId)
 
