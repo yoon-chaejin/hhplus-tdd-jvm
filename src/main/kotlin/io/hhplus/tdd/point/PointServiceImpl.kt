@@ -10,6 +10,18 @@ class PointServiceImpl (
     val pointHistoryTable: PointHistoryTable
 ) : PointService {
 
+    companion object CONSTANTS {
+        private const val ONE_MILLION = 1_000_000L // 1백만
+
+        const val MAX_TOTAL_AMOUNT = ONE_MILLION
+
+        const val MIN_AMOUNT_PER_CHARGE = 1L
+        const val MAX_AMOUNT_PER_CHARGE = ONE_MILLION
+
+        const val MIN_AMOUNT_PER_USE = 1L
+        const val MAX_AMOUNT_PER_USE = ONE_MILLION
+    }
+
     override fun findUserPointById(id: Long): UserPoint {
         return userPointTable.selectById(id)
     }
@@ -20,7 +32,7 @@ class PointServiceImpl (
 
 
     override fun charge(id: Long, amount: Long): UserPoint {
-        if (amount <= 0 || amount > 1_000_000) {
+        if (amount < MIN_AMOUNT_PER_CHARGE || amount > MAX_AMOUNT_PER_CHARGE) {
             throw Exception("최소 1 포인트에서 최대 백만 포인트까지 충전 가능합니다.")
         }
 
@@ -28,7 +40,7 @@ class PointServiceImpl (
 
         val pointAfterCharge = userPoint.point + amount
 
-        if (pointAfterCharge > 1_000_000) {
+        if (pointAfterCharge > MAX_TOTAL_AMOUNT) {
             throw Exception("최대로 충전 가능한 포인트를 초과했습니다.")
         }
 
@@ -39,7 +51,7 @@ class PointServiceImpl (
     }
 
     override fun use(id: Long, amount: Long): UserPoint {
-        if (amount <= 0 || amount > 1_000_000) {
+        if (amount < MIN_AMOUNT_PER_USE || amount > MAX_AMOUNT_PER_USE) {
             throw Exception("최소 1 포인트에서 최대 백만 포인트까지 사용 가능합니다.")
         }
 

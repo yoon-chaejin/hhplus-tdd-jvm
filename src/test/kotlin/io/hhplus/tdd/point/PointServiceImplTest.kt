@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 
 class PointServiceImplTest
 {
-    val sut: PointService = PointServiceImpl(UserPointTable(), PointHistoryTable())
+    val sut: PointServiceImpl = PointServiceImpl(UserPointTable(), PointHistoryTable())
 
     @Test fun `처음 UserPoint를 조회하는 경우, amount가 0이고 해당 id를 갖는 UserPoint를 반환한다`() {
         //given
@@ -46,10 +46,10 @@ class PointServiceImplTest
         assertEquals(0, pointHistories.size)
     }
 
-    @Test fun `충전하려는 금액이 0인 경우, 실패한다`() {
+    @Test fun `충전하려는 금액이 최소 충전 금액보다 작은 경우, 실패한다`() {
         //given
         val userId = 1L
-        val amount = 0L
+        val amount = PointServiceImpl.MIN_AMOUNT_PER_CHARGE - 1
 
         //when
 
@@ -59,10 +59,10 @@ class PointServiceImplTest
         }
     }
 
-    @Test fun `충전하려는 금액이 백만보다 큰 경우, 실패한다`() {
+    @Test fun `충전하려는 금액이 최대 충전 금액보다 큰 경우, 실패한다`() {
         //given
         val userId = 1L
-        val amount = 1_000_001L
+        val amount = PointServiceImpl.MAX_AMOUNT_PER_CHARGE + 1
 
         //when
 
@@ -72,10 +72,10 @@ class PointServiceImplTest
         }
     }
 
-    @Test fun `충전하려는 금액이 백만인 경우, 성공한다`() {
+    @Test fun `충전하려는 금액이 최소 충전 금액과 최대 충전 금액 사이에 있는 경우, 성공한다`() {
         //given
         val userId = 1L
-        val amount = 1_000_000L
+        val amount = (PointServiceImpl.MIN_AMOUNT_PER_CHARGE..PointServiceImpl.MAX_AMOUNT_PER_CHARGE).random()
 
         //when
         val userPoint = sut.charge(userId, amount)
@@ -84,7 +84,7 @@ class PointServiceImplTest
         assertEquals(amount, userPoint.point)
     }
 
-    @Test fun `특정 유저가 충전 후 총 포인트가 백만보다 큰 경우, 실패한다`() {
+    @Test fun `충전 후 총 포인트가 백만보다 큰 경우, 실패한다`() {
         //given
         val userPointAfterFirstCharge = sut.charge(1L, 1_000_000L)
         assertEquals(1_000_000L, userPointAfterFirstCharge.point)
@@ -96,10 +96,10 @@ class PointServiceImplTest
         }
     }
 
-    @Test fun `사용하려는 금액이 0인 경우, 실패한다`() {
+    @Test fun `사용하려는 금액이 최소 사용 금액보다 작은 경우, 실패한다`() {
         //given
         val userId = 1L
-        val amount = 0L
+        val amount = PointServiceImpl.MIN_AMOUNT_PER_USE - 1
 
         //when
 
@@ -109,10 +109,10 @@ class PointServiceImplTest
         }
     }
 
-    @Test fun `사용하려는 금액이 백만보다 큰 경우, 실패한다`() {
+    @Test fun `사용하려는 금액이 최대 사용 금액보다 큰 경우, 실패한다`() {
         //given
         val userId = 1L
-        val amount = 1_000_001L
+        val amount = PointServiceImpl.MAX_AMOUNT_PER_USE + 1
 
         //when
 
@@ -125,8 +125,8 @@ class PointServiceImplTest
     @Test fun `가진 포인트보다 더 큰 포인트를 사용하려는 경우, 실패한다`() {
         //given
         val userId = 1L
-        val amount = 1L
-        val userPoint = sut.findUserPointById(userId)
+        val amount = (PointServiceImpl.MIN_AMOUNT_PER_USE..PointServiceImpl.MAX_AMOUNT_PER_USE).random()
+        sut.findUserPointById(userId)
 
         //when
 
