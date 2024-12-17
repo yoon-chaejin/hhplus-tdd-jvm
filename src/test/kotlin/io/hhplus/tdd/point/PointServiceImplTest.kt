@@ -1,13 +1,23 @@
 package io.hhplus.tdd.point
 
-import io.hhplus.tdd.database.PointHistoryTable
-import io.hhplus.tdd.database.UserPointTable
-import org.junit.jupiter.api.Assertions.*
+import io.hhplus.tdd.database.FakePointHistoryTable
+import io.hhplus.tdd.database.FakeUserPointTable
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
 class PointServiceImplTest
 {
-    val sut: PointServiceImpl = PointServiceImpl(UserPointTable(), PointHistoryTable())
+    private val userPointTable = FakeUserPointTable()
+    private val pointHistoryTable = FakePointHistoryTable()
+    private val sut: PointServiceImpl = PointServiceImpl(userPointTable, pointHistoryTable)
+
+    @AfterEach
+    fun tearDown() {
+        userPointTable.clearTable()
+        pointHistoryTable.clearTable()
+    }
 
     @Test fun `처음 UserPoint를 조회하는 경우, amount가 0이고 해당 id를 갖는 UserPoint를 반환한다`() {
         //given
