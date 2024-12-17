@@ -14,8 +14,8 @@ class PointServiceImpl (
         return userPointTable.selectById(id)
     }
 
-    override fun findPointHistories(id: Long): List<PointHistory> {
-        return pointHistoryTable.selectAllByUserId(id)
+    override fun findPointHistoriesByUserId(userId: Long): List<PointHistory> {
+        return pointHistoryTable.selectAllByUserId(userId)
     }
 
 

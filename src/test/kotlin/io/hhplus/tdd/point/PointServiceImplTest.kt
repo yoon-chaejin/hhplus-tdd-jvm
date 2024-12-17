@@ -40,7 +40,7 @@ class PointServiceImplTest
         val userId = 1L
 
         //when
-        val pointHistories = pointService.findPointHistories(userId)
+        val pointHistories = pointService.findPointHistoriesByUserId(userId)
 
         //then
         assertEquals(0, pointHistories.size)
