@@ -1,8 +1,10 @@
 package io.hhplus.tdd.common
 
+import org.springframework.stereotype.Component
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 
+@Component
 class ReentrantLockManager {
     private val locks: ConcurrentHashMap<Long, ReentrantLock> = ConcurrentHashMap()
 

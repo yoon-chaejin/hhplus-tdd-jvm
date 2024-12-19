@@ -1,11 +1,13 @@
 package io.hhplus.tdd.point
 
+import io.hhplus.tdd.common.ReentrantLockManager
 import io.hhplus.tdd.database.PointHistoryTable
 import io.hhplus.tdd.database.UserPointTable
 import org.springframework.stereotype.Service
 
 @Service
 class PointServiceImpl (
+    val lockManager: ReentrantLockManager,
     val userPointTable: UserPointTable,
     val pointHistoryTable: PointHistoryTable
 ) : PointService {
@@ -20,20 +22,23 @@ class PointServiceImpl (
 
 
     override fun charge(id: Long, amount: Long): UserPoint {
-        val userPoint = userPointTable.selectById(id)
+        return lockManager.execute(id) {
+            val userPoint = userPointTable.selectById(id)
 
-        userPoint.charge(amount)
-        pointHistoryTable.insert(id, amount, TransactionType.CHARGE, System.currentTimeMillis())
+            userPoint.charge(amount)
+            pointHistoryTable.insert(id, amount, TransactionType.CHARGE, System.currentTimeMillis())
 
-        return userPointTable.insertOrUpdate(id, userPoint.point)
+            userPointTable.insertOrUpdate(id, userPoint.point)
+        }
     }
 
     override fun use(id: Long, amount: Long): UserPoint {
-        val userPoint = userPointTable.selectById(id)
+        return lockManager.execute(id) {
+            val userPoint = userPointTable.selectById(id)
 
-        userPoint.use(amount)
-        pointHistoryTable.insert(id, amount, TransactionType.USE, System.currentTimeMillis())
-
-        return userPointTable.insertOrUpdate(id, userPoint.point)
+            userPoint.use(amount)
+            pointHistoryTable.insert(id, amount, TransactionType.USE, System.currentTimeMillis())
+            userPointTable.insertOrUpdate(id, userPoint.point)
+        }
     }
 }
