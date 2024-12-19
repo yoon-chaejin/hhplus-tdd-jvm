@@ -1,16 +1,19 @@
 package io.hhplus.tdd.point
 
+import io.hhplus.tdd.common.StubReentrantLockManager
 import io.hhplus.tdd.database.StubPointHistoryTable
 import io.hhplus.tdd.database.StubUserPointTable
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class PointServiceImplTest
 {
+    private val lockManager = StubReentrantLockManager()
     private val pointHistoryTable = StubPointHistoryTable()
     private val userPointTable = StubUserPointTable()
-    private val sut = PointServiceImpl(userPointTable, pointHistoryTable)
+    private val sut = PointServiceImpl(lockManager, userPointTable, pointHistoryTable)
 
     private val userId = 1L
 
