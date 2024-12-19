@@ -1,13 +1,11 @@
 package io.hhplus.tdd.point
 
-import io.hhplus.tdd.database.StubUserPointTable
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class UserPointTest() {
-    val sut = UserPoint(
+class UserPointTest {
+    private val sut = UserPoint(
         id = 1L,
         point = 0,
         updateMillis = System.currentTimeMillis(),
