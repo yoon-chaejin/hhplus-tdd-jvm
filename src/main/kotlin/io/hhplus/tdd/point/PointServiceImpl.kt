@@ -10,18 +10,6 @@ class PointServiceImpl (
     val pointHistoryTable: PointHistoryTable
 ) : PointService {
 
-    companion object CONSTANTS {
-        private const val ONE_MILLION = 1_000_000L // 1백만
-
-        const val MAX_TOTAL_AMOUNT = ONE_MILLION
-
-        const val MIN_AMOUNT_PER_CHARGE = 1L
-        const val MAX_AMOUNT_PER_CHARGE = ONE_MILLION
-
-        const val MIN_AMOUNT_PER_USE = 1L
-        const val MAX_AMOUNT_PER_USE = ONE_MILLION
-    }
-
     override fun findUserPointById(id: Long): UserPoint {
         return userPointTable.selectById(id)
     }
@@ -32,38 +20,20 @@ class PointServiceImpl (
 
 
     override fun charge(id: Long, amount: Long): UserPoint {
-        if (amount < MIN_AMOUNT_PER_CHARGE || amount > MAX_AMOUNT_PER_CHARGE) {
-            throw Exception("최소 1 포인트에서 최대 백만 포인트까지 충전 가능합니다.")
-        }
-
         val userPoint = userPointTable.selectById(id)
 
-        val pointAfterCharge = userPoint.point + amount
-
-        if (pointAfterCharge > MAX_TOTAL_AMOUNT) {
-            throw Exception("최대로 충전 가능한 포인트를 초과했습니다.")
-        }
-
+        userPoint.charge(amount)
         pointHistoryTable.insert(id, amount, TransactionType.CHARGE, System.currentTimeMillis())
-        val userPointAfterCharge = userPointTable.insertOrUpdate(id, pointAfterCharge)
 
-        return userPointAfterCharge
+        return userPointTable.insertOrUpdate(id, userPoint.point)
     }
 
     override fun use(id: Long, amount: Long): UserPoint {
-        if (amount < MIN_AMOUNT_PER_USE || amount > MAX_AMOUNT_PER_USE) {
-            throw Exception("최소 1 포인트에서 최대 백만 포인트까지 사용 가능합니다.")
-        }
-
         val userPoint = userPointTable.selectById(id)
 
-        if (userPoint.point < amount) {
-            throw Exception("보유한 포인트를 초과하여 사용할 수 없습니다.")
-        }
-
+        userPoint.use(amount)
         pointHistoryTable.insert(id, amount, TransactionType.USE, System.currentTimeMillis())
-        val userPointAfterUse = userPointTable.insertOrUpdate(id, userPoint.point - amount)
 
-        return userPointAfterUse
+        return userPointTable.insertOrUpdate(id, userPoint.point)
     }
 }

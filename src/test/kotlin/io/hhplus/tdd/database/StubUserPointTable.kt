@@ -2,9 +2,14 @@ package io.hhplus.tdd.database
 
 import io.hhplus.tdd.point.UserPoint
 
-class StubUserPointTable (
-    var userPoint: UserPoint,
-): UserPointTable() {
+class StubUserPointTable: UserPointTable() {
+
+    private var userPoint: UserPoint = UserPoint(
+        id = 1L,
+        point = 500,
+        updateMillis = System.currentTimeMillis(),
+    )
+
     override fun selectById(id: Long): UserPoint {
         return userPoint
     }
