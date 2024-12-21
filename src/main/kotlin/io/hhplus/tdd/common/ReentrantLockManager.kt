@@ -9,7 +9,7 @@ class ReentrantLockManager {
     private val locks: ConcurrentHashMap<Long, ReentrantLock> = ConcurrentHashMap()
 
     fun <T> execute(key: Long, action: () -> T): T {
-        val lock = locks.getOrPut(key) { ReentrantLock() }
+        val lock = locks.getOrPut(key) { ReentrantLock(true) }
         lock.lock()
         return try {
             action()
